@@ -4,7 +4,7 @@ To prevent your users from possibly facing man-in-the-middle attacks and secure 
 
 1. **Get the GnuPG utilities.** This is most likely included on your distro of Linux and can be installed with `brew install gnupg` on macOS.
 
-2. **Generate a new key.** Open a terminal and run `gpg --full-generate-key`. Pick `(1) RSA and RSA` as the type, `4096` for the length, and `0` to keep the key from expiring. Then enter your real name, email address, and an optional comment to fill out the signature details.
+2. **Generate a new key.** Open a terminal and run `gpg --full-generate-key`. Pick the default option (`(1) RSA and RSA` in this case) as the type (RSA should be `4096` for the length) and `0` to keep the key from expiring. Then enter your real name, email address, and an optional comment to fill out the signature details.
 ```
 gpg (GnuPG) 2.4.9; Copyright (C) 2025 g10 Code GmbH
 This is free software: you are free to change and redistribute it.
@@ -55,7 +55,8 @@ ssb   cv25519/663F59A2DD7C4C27 2026-05-04 [E]
 
 
 4. **Create Release.gpg.** With this signature copied, you can now run the next command: `gpg -abs -u <what you copied> -o Release.gpg Release`. This signs your Release and creates Release.gpg, which marks the first part of signing properly complete.
-
+(example: `gpg -abs -u 0EA1CD919AF64DDE44F2AF3EAEE9BA5226A6631B -o Release.gpg Release`)
 5. **Export your public key.** Now, the final step is to export the public key. This allows your users to download and trust your repo is really yours. Remember that picture up above with the two arrows? This time, you need to copy what the yellow arrow is pointing to (all of the numbers and letters to the right of `rsa4096/`. Once copied, you can type `gpg --export <what you copied> > <yourname/username>-repo.gpg`.
+(example: `gpg --export AEE9BA5226A6631B > doregon-repo.gpg`)
 
 6. **Upload the public key to a location where your users can access it!** You can upload the key to the README of your repository on GitHub, for example. Alternatively, you can open a pull request to add your key to Procursus's keyring, so all your users need to do is look for your repo's name in the Keyrings section. If you send your public key to me, I will handle packaging and adding keys to the Procursus keyring for you.
