@@ -2,9 +2,9 @@
 
 To prevent your users from possibly facing man-in-the-middle attacks and secure your repository, you should follow these steps. To get started, we'll need you to have a GPG key to sign with and export the public key (it's easier than you might think). I provide instructions for Linux and macOS because these are the two operating systems I use--this should be doable in WSL or Cygwin.
 
-1. **Get the GnuPG utilities.** This is most likely included on your distro of Linux and can be installed with `brew install gnupg` on macOS.
+1. **Get the GnuPG utilities.** This is most likely included on your distro of Linux and can be installed with `sudo apt install gnupg` or `brew install gnupg` on macOS.
 
-2. **Generate a new key.** Open a terminal and run `gpg --full-generate-key`. Pick the default option (`(1) RSA and RSA` in this case) as the type (RSA should be `4096` for the length) and `0` to keep the key from expiring. Then enter your real name, email address, and an optional comment to fill out the signature details.
+2. **Generate a new key.** Open a terminal and run `gpg --full-generate-key`. Pick `(9) ECC (sign and encrypt)` as the type, pick `(1) Curve 25519 *default*` for your curve, and `0` to keep the key from expiring (if you don't have the option to use ECC, choose `(1) RSA and RSA`, then select `4096` as your key length). Then enter your real name, email address, and an optional comment to fill out the signature details.
 ![Screen Shot 2021-07-20 at 3 19 37 PM](https://user-images.githubusercontent.com/55281754/126382964-d7e483ae-89ef-4161-a807-16d411f5336e.png)
 Once you've done this, hit `O` and enter to save your settings, enter a password (you can leave it blank if you desire) and there you go! You now have a new key to sign with.
 
