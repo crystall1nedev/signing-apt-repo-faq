@@ -13,7 +13,8 @@ Once you've done this, hit `O` and enter to save your settings, enter a password
 
 
 4. **Create Release.gpg.** With this signature copied, you can now run the next command: `gpg -abs -u <what you copied> -o Release.gpg Release`. This signs your Release and creates Release.gpg, which marks the first part of signing properly complete.
-
+(example: `gpg -abs -u 0EA1CD919AF64DDE44F2AF3EAEE9BA5226A6631B -o Release.gpg Release`)
 5. **Export your public key.** Now, the final step is to export the public key. This allows your users to download and trust your repo is really yours. Remember that picture up above with the two arrows? This time, you need to copy what the yellow arrow is pointing to (all of the numbers and letters to the right of `rsa4096/`. Once copied, you can type `gpg --export <what you copied> > <yourname/username>-repo.gpg`.
+(example: `gpg --export AEE9BA5226A6631B > doregon-repo.gpg`)
 
 6. **Upload the public key to a location where your users can access it!** You can upload the key to the README of your repository on GitHub, for example. Alternatively, you can open a pull request to add your key to Procursus's keyring, so all your users need to do is look for your repo's name in the Keyrings section. If you send your public key to me, I will handle packaging and adding keys to the Procursus keyring for you.
