@@ -2,9 +2,9 @@
 
 To prevent your users from possibly facing man-in-the-middle attacks and secure your repository, you should follow these steps. To get started, we'll need you to have a GPG key to sign with and export the public key (it's easier than you might think). I provide instructions for Linux and macOS because these are the two operating systems I use--this should be doable in WSL or Cygwin.
 
-1. **Get the GnuPG utilities.** This is most likely included on your distro of Linux and can be installed with `brew install gnupg` on macOS.
+1. **Get the GnuPG utilities.** This is most likely included on your distro of Linux and can be installed with `sudo apt install gnupg` or `brew install gnupg` on macOS.
 
-2. **Generate a new key.** Open a terminal and run `gpg --full-generate-key`. Pick the default option (`(1) RSA and RSA` in this case) as the type (RSA should be `4096` for the length) and `0` to keep the key from expiring. Then enter your real name, email address, and an optional comment to fill out the signature details.
+2. **Generate a new key.** Open a terminal and run `gpg --full-generate-key`. Pick `(9) ECC (sign and encrypt)` as the type, pick `(1) Curve 25519 *default*` for your curve, and `0` to keep the key from expiring (if you don't have the option to use ECC, choose `(1) RSA and RSA`, then select `4096` as your key length). Then enter your real name, email address, and an optional comment to fill out the signature details.
 ```
 gpg (GnuPG) 2.4.9; Copyright (C) 2025 g10 Code GmbH
 This is free software: you are free to change and redistribute it.
