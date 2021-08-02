@@ -1,4 +1,4 @@
-# How to sign a Cydia repository... correctly.
+# How to sign an APT repository... correctly.
 
 To prevent your users from possibly facing man-in-the-middle attacks and secure your repository, you should follow these steps. To get started, we'll need you to have a GPG key to sign with and export the public key (it's easier than you might think). I provide instructions for Linux and macOS because these are the two operating systems I use--this should be doable in WSL or Cygwin.
 
