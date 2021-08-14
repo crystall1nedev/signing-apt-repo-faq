@@ -22,59 +22,42 @@ Once you've done this, hit `O` and enter to save your settings, enter a password
 
 6. **Verify your key works.** Upload Release.gpg to your repo's server, and move the exported key to `/etc/apt/trusted.gpg.d/` on iOS or `/opt/procursus/etc/apt/trusted.gpg.d` on macOS. If you're successful, you should only see errors about an incorrect Date and missing Hashes (we solve this in the next section). Getting `BADSIG`, `NO_PUBKEY`, or any other GPG related errors means that you should check again and possbily regenerate your keys. 
 
-## Making use of the key
+## Making use of the keys
 
-For our next act, we need to make APT release when our repo updated, and verify the shas of our Packages.\* files. Here, I've copied a snippet from my repository (a bash shell script):
-```bash
-rm -rf Packages*
-dpkg-scanpackages --multiversion debs > Packages
-gzip -c9 Packages > Packages.gz
+7. **Generate and sign your files.** When you or your package manager downloads repo files, in this case Packages\* and Release, we need to certify that these files you download are exactly the ones you're supposed to get. It's possible to do so by checking the hash of a file, thanks to protocols like MD5, SHA1, SHA256...  
+Each time you're doing a modification to your `deb`s, you'll need to run this script from your repo's root folder:
+```sh
+apt-ftparchive packages ./debs > Packages
+bzip2 -c9 Packages > Packages.bz2
 xz -c9 Packages > Packages.xz
 xz -5fkev --format=lzma Packages > Packages.lzma
+gzip -c9 Packages > Packages.gz
 zstd -c19 Packages > Packages.zst
-bzip2 -c9 Packages > Packages.bz2
-packages_size=$(ls -l Packages | awk '{print $5,$9}')
-packages_md5=$(md5sum Packages | awk '{print $1}')
-packages_sha256=$(sha256sum Packages | awk '{print $1}')
-packagesgz_size=$(ls -l Packages.gz | awk '{print $5,$9}')
-packagesgz_md5=$(md5sum Packages.gz | awk '{print $1}')
-packagesgz_sha256=$(sha256sum Packages.gz | awk '{print $1}')
-packagesbz2_size=$(ls -l Packages.bz2 | awk '{print $5,$9}')
-packagesbz2_md5=$(md5sum Packages.bz2 | awk '{print $1}')
-packagesbz2_sha256=$(sha256sum Packages.bz2 | awk '{print $1}')
-packagesxz_size=$(ls -l Packages.xz | awk '{print $5,$9}')
-packagesxz_md5=$(md5sum Packages.xz | awk '{print $1}')
-packagesxz_sha256=$(sha256sum Packages.xz | awk '{print $1}')
-packageszst_size=$(ls -l Packages.zst | awk '{print $5,$9}')
-packageszst_md5=$(md5sum Packages.zst | awk '{print $1}')
-packageszst_sha256=$(sha256sum Packages.zst | awk '{print $1}')
-date=$(date -R -u)
-cp Base Release
-sed -i "s/Date: .*/Date: $date/" Release
-echo "MD5Sum:" >> Release
-echo " $packages_md5 $packages_size" >> Release
-echo " $packagesgz_md5 $packagesgz_size" >> Release
-echo " $packagesbz2_md5 $packagesbz2_size" >> Release
-echo " $packagesxz_md5 $packagesxz_size" >> Release
-echo " $packageszst_md5 $packageszst_size" >> Release
-echo "SHA256:" >> Release
-echo " $packages_sha256 $packages_size" >> Release
-echo " $packagesgz_sha256 $packagesgz_size" >> Release
-echo " $packagesbz2_sha256 $packagesbz2_size" >> Release
-echo " $packagesxz_sha256 $packagesxz_size" >> Release
-echo " $packageszst_sha256 $packageszst_size" >> Release
+
+grep -E "Origin:|Label:|Suite:|Version:|Codename:|Architectures:|Components:|Description:" Release > Base
+apt-ftparchive release . > Release
+cat Base Release > out && mv out Release
+
+# This line below will ask for your password defined on step 2. Replace what's on <> with the right value, it should look like step 4.
+gpg -abs -u <blue-arrow-value> -o Release.gpg Release
 ```
-*NOTE:* macOS users may need to use the GNU versions of md5sum and sha256sum.
+(If you are hosting your repo on GitHub Pages, you can use GitHub Actions [like that](https://github.com/RedenticDev/Repo/blob/main/.github/workflows/automations.yml#L12-L87))
 
-1. **Rename Release to Base.** Don't panic--if you run the above shell script it will generate the Release file every time you run it. You can also append this script to your repo.sh, update.sh, or whatever you use (if you have one).
+Some info:
+- This script requires `zstd`, that can be installed using `brew install zstd` or `sudo apt install zstd`
+	- Same thing for `xz` and `lzma` (both bundled in `xz` brew package)
+- macOS users:
+	- May need to use the GNU versions of `md5sum` and `sha256sum`.
+	- **Do need** [Procursus fork of apt-ftparchive](https://apt.procurs.us/apt-ftparchive) as macOS doesn't features `apt`. You may need to add '`./`' before each `apt-ftparchive` in the script.
+- What is does:
+	- Generates Packages with hashes from the debs/ folder, change this if your debs are not in debs/
+	- Compresses it with xz, gzip, zstd, bzip2, and lzma, this is for the widest compatibility. Change if you don't see the need for it.
+	- Saves temporarily key values of Release file in Base file
+	- Generates hashes and date of Packages files in the Release file
+	- Adds the content of Base _then_ Release in Release
+		- Note that you shouldn't push Base file, it's temporary. Remove it by adding `rm Base` in the script or don't push it by doing `git add Packages* Release*` instead of `git add .`.
+	- Signs Release in Release.gpg
 
-2. **Run the script.** A summary of what it does:
-   - Generates Packages from the debs/ folder, change this if your debs are not in debs/
-   - Compresses it with xz, gzip, zstd, bzip2, and lzma, this is for the widest compatibility. Change if you don't see the need for it.
-   - Calculates the UTC Date.
-   - Calculates the SHA256 and MD5's of the Packages file, and its compressed variants.
-   - Copies the Base template over `Release`.
-   - Imports the SHA256s, MD5s, and Date into the fresh Release file, using sed
-       - macOS users should use gsed from Homebrew or Procursus, or modify the above to use the default sed.
+## Conclusion
 
-3. **Upload your new changes!**. The files changed by the above shell script can be uploaded to your repo server. To your users, nothing will have changed and the repo will still work as usual. For your GPG key, you can put it somewhere public, like the README of a GitHub Pages repository, the main page for a private one, or another location where your users can easily get at. I've been working closely with the Procursus Team to add keys to their keyring, so in a future update of Sileo adding your repo automatically installs your keyring (or users can manually install it), and you can email me at `tunnic.adam@gmail.com` to see about getting your keys onto Procursus.
+8. **Upload your new changes!**. The files changed by the above shell script can be uploaded to your repo server. To your users, nothing will have changed and the repo will still work as usual. For your GPG key, you can put it somewhere public, like the README of a GitHub Pages repository, the main page for a private one, or another location where your users can easily get at. If you want to include your key in your README in a GitHub repo, you can drag it into the README while editing it _from the web editor_. I've been working closely with the Procursus Team to add keys to their keyring, so in a future update of Sileo adding your repo automatically installs your keyring (or users can manually install it), and you can email me at `tunnic.adam@gmail.com` to see about getting your keys onto Procursus.
