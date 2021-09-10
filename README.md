@@ -34,6 +34,14 @@ xz -5fkev --format=lzma Packages > Packages.lzma
 gzip -c9 Packages > Packages.gz
 zstd -c19 Packages > Packages.zst
 
+# While we are at it, also geenrates Contents files
+apt-ftparchive contents ./debs > Contents-iphoneos-arm
+bzip2 -c9 Contents-iphoneos-arm > Contents-iphoneos-arm.bz2
+xz -c9 Contents-iphoneos-arm > Contents-iphoneos-arm.xz
+xz -5fkev --format=lzma Contents-iphoneos-arm > Contents-iphoneos-arm.lzma
+gzip -c9 Contents-iphoneos-arm > Contents-iphoneos-arm.gz
+zstd -c19 Contents-iphoneos-arm > Contents-iphoneos-arm.zst
+
 grep -E "Origin:|Label:|Suite:|Version:|Codename:|Architectures:|Components:|Description:" Release > Base
 apt-ftparchive release . > Release
 cat Base Release > out && mv out Release
