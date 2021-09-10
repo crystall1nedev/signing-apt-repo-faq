@@ -24,7 +24,7 @@ Once you've done this, hit `O` and enter to save your settings, enter a password
 
 ## Making use of the keys
 
-7. **Generate and sign your files.** When you or your package manager downloads repo files, in this case Packages\* and Release, we need to certify that these files you download are exactly the ones you're supposed to get. It's possible to do so by checking the hash of a file, thanks to protocols like MD5, SHA1, SHA256...  
+7. **Generate and sign your files.** When you or your package manager downloads repo files, in this case Packages\*, Contents\* and Release, we need to certify that these files you download are exactly the ones you're supposed to get. It's possible to do so by checking the hash of a file, thanks to protocols like MD5, SHA1, SHA256...  
 Each time you're doing a modification to your `deb`s, you'll need to run this script from your repo's root folder:
 ```sh
 apt-ftparchive packages ./debs > Packages
@@ -60,10 +60,12 @@ Some info:
 - What is does:
 	- Generates Packages with hashes from the debs/ folder, change this if your debs are not in debs/
 	- Compresses it with xz, gzip, zstd, bzip2, and lzma, this is for the widest compatibility. Change if you don't see the need for it.
+	- Generates Conetnts file which allows previewing package filenames before downloading
+	- Also compresses it with xz, gzip, zstd, bzip2, and lzma, this is for the widest compatibility.
 	- Saves temporarily key values of Release file in Base file
 	- Generates hashes and date of Packages files in the Release file
 	- Adds the content of Base _then_ Release in Release
-		- Note that you shouldn't push Base file, it's temporary. Remove it by adding `rm Base` in the script or don't push it by doing `git add Packages* Release*` instead of `git add .`.
+		- Note that you shouldn't push Base file, it's temporary. Remove it by adding `rm Base` in the script or don't push it by doing `git add Packages* Conetnts* Release*` instead of `git add .`.
 	- Signs Release in Release.gpg
 
 ## Conclusion
