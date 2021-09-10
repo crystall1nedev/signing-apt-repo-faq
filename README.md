@@ -34,7 +34,7 @@ xz -5fkev --format=lzma Packages > Packages.lzma
 gzip -c9 Packages > Packages.gz
 zstd -c19 Packages > Packages.zst
 
-# While we are at it, also geenrates Contents files
+# While we are at it, also generate Contents files
 apt-ftparchive contents ./debs > Contents-iphoneos-arm
 bzip2 -c9 Contents-iphoneos-arm > Contents-iphoneos-arm.bz2
 xz -c9 Contents-iphoneos-arm > Contents-iphoneos-arm.xz
