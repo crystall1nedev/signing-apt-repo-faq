@@ -66,6 +66,7 @@ Some info:
 	- Generates hashes and date of Packages files in the Release file
 	- Adds the content of Base _then_ Release in Release
 		- Note that you shouldn't push Base file, it's temporary. Remove it by adding `rm Base` in the script or don't push it by doing `git add Packages* Conetnts* Release*` instead of `git add .`.
+		- Even better, you could add it to .gitignore
 	- Signs Release in Release.gpg
 
 ## Conclusion
