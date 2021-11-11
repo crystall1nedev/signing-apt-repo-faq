@@ -31,6 +31,7 @@ apt-ftparchive packages ./debs > Packages
 bzip2 -c9 Packages > Packages.bz2
 xz -c9 Packages > Packages.xz
 xz -5fkev --format=lzma Packages > Packages.lzma
+lz4 -c9 Packages > Packages.lz4
 gzip -c9 Packages > Packages.gz
 zstd -c19 Packages > Packages.zst
 
@@ -39,6 +40,7 @@ apt-ftparchive contents ./debs > Contents-iphoneos-arm
 bzip2 -c9 Contents-iphoneos-arm > Contents-iphoneos-arm.bz2
 xz -c9 Contents-iphoneos-arm > Contents-iphoneos-arm.xz
 xz -5fkev --format=lzma Contents-iphoneos-arm > Contents-iphoneos-arm.lzma
+lz4 -c9 Contents-iphoneos-arm > Contents-iphoneos-arm.lz4
 gzip -c9 Contents-iphoneos-arm > Contents-iphoneos-arm.gz
 zstd -c19 Contents-iphoneos-arm > Contents-iphoneos-arm.zst
 
@@ -53,15 +55,15 @@ gpg -abs -u <blue-arrow-value> -o Release.gpg Release
 
 Some info:
 - This script requires `zstd`, that can be installed using `brew install zstd` or `sudo apt install zstd`
-	- Same thing for `xz` and `lzma` (both bundled in `xz` brew package)
+	- Same thing for `xz`, `lz4` and `lzma` (bundled in `xz` and `lz4` brew package)
 - macOS users:
 	- May need to use the GNU versions of `md5sum` and `sha256sum`.
 	- **Do need** [Procursus fork of apt-ftparchive](https://apt.procurs.us/apt-ftparchive) as macOS doesn't features `apt`. You may need to add '`./`' before each `apt-ftparchive` in the script.
 - What is does:
 	- Generates Packages with hashes from the debs/ folder, change this if your debs are not in debs/
-	- Compresses it with xz, gzip, zstd, bzip2, and lzma, this is for the widest compatibility. Change if you don't see the need for it.
+	- Compresses it with xz, gzip, zstd, bzip2, lz4, and lzma, this is for the widest compatibility. Change if you don't see the need for it.
 	- Generates Conetnts file which allows previewing package filenames before downloading
-	- Also compresses it with xz, gzip, zstd, bzip2, and lzma, this is for the widest compatibility.
+	- Also compresses it with xz, gzip, zstd, bzip2, lz4 and lzma, this is for the widest compatibility.
 	- Saves temporarily key values of Release file in Base file
 	- Generates hashes and date of Packages files in the Release file
 	- Adds the content of Base _then_ Release in Release
